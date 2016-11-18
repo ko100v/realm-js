@@ -47,6 +47,7 @@
     "get-sync-version": "scripts/download-core.sh --versionSync",
     "jsdoc": "rm -rf docs/output && jsdoc -c docs/conf.json",
     "lint": "eslint",
+    "lint-ci": "eslint -f checkstyle",
     "test": "scripts/test.sh",
     "install": "node-pre-gyp install --fallback-to-build",
     "prepublish": "scripts/prepublish.sh"
