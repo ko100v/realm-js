@@ -96,7 +96,7 @@ def getNodeSpec(target) {
   return 'osx_vegas'
 }
 
-def doDockerBuild(target, postStep) {
+def doDockerBuild(target, postStep = null) {
   return {
     timeout(25) { // 25 minutes
       node('docker') {
