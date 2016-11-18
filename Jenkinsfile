@@ -110,12 +110,15 @@ def doDockerBuild(target, postStep = null) {
   }
 }
 
-def doBuild(nodeSpec, target) {
+def doBuild(nodeSpec, target, postStep = null) {
   return {
     timeout(25) { // 25 minutes
       node(nodeSpec) {
         getSourceArchive()
         sh "bash scripts/test.sh ${target}"
+        if(postStep) {
+          postStep.call()
+        }
       }
     }
   }
@@ -149,6 +152,7 @@ stage('build') {
     macos_react_tests_debug: doBuild('osx_vegas', 'react-tests Debug'),
     android_react_tests: doBuild('FastLinux', 'react-tests-android', {
       sh "cat tests/react-test-app/tests.xml"
+      junit 'tests/react-test-app/tests.xml'
     })
   )
 
