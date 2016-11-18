@@ -107,6 +107,7 @@ stage('build') {
     }),
     linux_node_debug: doDockerBuild('node Debug'),
     linux_node_release: doDockerBuild('node Release'),
+    linux_test_runners: doDockerBuild('test-runners'),
     macos_node_debug: doBuild('osx_vegas', 'node Debug'),
     macos_node_release: doBuild('osx_vegas', 'node Release'),
     macos_realmjs_debug: doBuild('osx_vegas', 'realmjs Debug'),
