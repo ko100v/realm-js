@@ -102,7 +102,9 @@ stage('build') {
     eslint: doDockerBuild('eslint-ci', {
       step([$class: 'CheckStylePublisher', canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: 'eslint.xml', unHealthy: ''])
     }),
-    jsdoc: doDockerBuild('jsdoc'),
+    jsdoc: doDockerBuild('jsdoc', {
+      publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'docs/output', reportFiles: 'index.html', reportName: 'Docs'])
+    }),
     linux_node_debug: doDockerBuild('node Debug'),
     linux_node_release: doDockerBuild('node Release'),
     macos_node_debug: doBuild('osx_vegas', 'node Debug'),
@@ -113,8 +115,9 @@ stage('build') {
     macos_react_tests_release: doBuild('osx_vegas', 'react-tests Release'),
     macos_react_example_debug: doBuild('osx_vegas', 'react-example Debug'),
     macos_react_example_release: doBuild('osx_vegas', 'react-example Release'),
-    macos_object_store_debug: doBuild('osx_vegas', 'object-store Debug'),
-    macos_object_store_release: doBuild('osx_vegas', 'object-store Release'),
+    // Should be handled by the realm-object-store Jenksinfile...
+    //macos_object_store_debug: doBuild('osx_vegas', 'object-store Debug'), 
+    //macos_object_store_release: doBuild('osx_vegas', 'object-store Release'),
     android_react_tests: doBuild('FastLinux', 'react-tests-android', {
       sh "cat tests/react-test-app/tests.xml"
       junit 'tests/react-test-app/tests.xml'
