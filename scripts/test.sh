@@ -115,7 +115,7 @@ case "$TARGET" in
 "eslint-ci")
   [[ $CONFIGURATION == 'Debug' ]] && exit 0
   npm install
-  npm run lint-ci . > eslint.xml || true
+  ./node_modules/.bin/eslint -f checkstyle . > eslint.xml || true
   ;;
 "jsdoc")
   [[ $CONFIGURATION == 'Debug' ]] && exit 0
