@@ -134,7 +134,7 @@ def doBuild(nodeSpec, target) {
 */
 stage('build') {
   parallel(
-    eslint: doDockerBuild('eslint'),
+    eslint: doDockerBuild('eslint-ci'),
     jsdoc: doDockerBuild('jsdoc'),
     linux_node_debug: doDockerBuild('node Debug'),
     linux_node_release: doDockerBuild('node Release'),
