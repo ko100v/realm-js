@@ -96,12 +96,13 @@ def getNodeSpec(target) {
   return 'osx_vegas'
 }
 
-def doDockerBuild(target) {
+def doDockerBuild(target, postStep = {}) {
   return {
     timeout(25) { // 25 minutes
       node('docker') {
         getSourceArchive()
         sh "bash scripts/docker-test.sh ${target}"
+        postStep()
       }
     }
   }
@@ -134,7 +135,9 @@ def doBuild(nodeSpec, target) {
 */
 stage('build') {
   parallel(
-    eslint: doDockerBuild('eslint-ci'),
+    eslint: doDockerBuild('eslint-ci', {
+      step([$class: 'CheckStylePublisher', canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: 'eslint.xml', unHealthy: ''])
+    }),
     jsdoc: doDockerBuild('jsdoc'),
     linux_node_debug: doDockerBuild('node Debug'),
     linux_node_release: doDockerBuild('node Release'),
