@@ -96,13 +96,15 @@ def getNodeSpec(target) {
   return 'osx_vegas'
 }
 
-def doDockerBuild(target, postStep = {}) {
+def doDockerBuild(target, postStep) {
   return {
     timeout(25) { // 25 minutes
       node('docker') {
         getSourceArchive()
         sh "bash scripts/docker-test.sh ${target}"
-        postStep()
+        if(postStep) {
+          postStep.call()
+        }
       }
     }
   }
