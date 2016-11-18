@@ -138,7 +138,6 @@ def doBuild(nodeSpec, target) {
 stage('build') {
   parallel(
     eslint: doDockerBuild('eslint-ci', {
-      sh "cat eslint.xml"
       step([$class: 'CheckStylePublisher', canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: 'eslint.xml', unHealthy: ''])
     }),
     jsdoc: doDockerBuild('jsdoc'),
@@ -147,7 +146,10 @@ stage('build') {
     macos_node_debug: doBuild('osx_vegas', 'node Debug'),
     macos_node_release: doBuild('osx_vegas', 'node Release'),
     macos_realmjs_debug: doBuild('osx_vegas', 'realmjs Debug'),
-    macos_react_tests_debug: doBuild('osx_vegas', 'react-tests Debug')
+    macos_react_tests_debug: doBuild('osx_vegas', 'react-tests Debug'),
+    android_react_tests: doBuild('FastLinux', 'react-tests-android', {
+      sh "cat tests/react-test-app/tests.xml"
+    })
   )
 
 /*  def configurations = ['Debug', 'Release']
