@@ -9,24 +9,6 @@ def getSourceArchive() {
   sshagent(['realm-ci-ssh']) {
     sh 'git submodule update --init --recursive'
   }
-  
-/*  checkout([
-      $class: 'GitSCM',
-      browser: [$class: 'GithubWeb', repoUrl: "git@github.com:realm/${repoName}.git"],
-      extensions: [
-          [$class: 'CleanCheckout'],
-          [$class: 'WipeWorkspace'],
-          [$class: 'SubmoduleOption', recursiveSubmodules: true]
-      ],
-      gitTool: 'native git',
-      userRemoteConfigs: [[
-          credentialsId: 'realm-ci-ssh',
-          name: 'origin',
-          refspec: '+refs/tags/*:refs/remotes/origin/tags/* +refs/heads/*:refs/remotes/origin/*',
-          url: "git@github.com:realm/${repoName}.git"
-      ]]
-  ])
-*/
 }
 
 def readGitTag() {
@@ -87,15 +69,6 @@ stage('check') {
   }
 }
 
-def getNodeSpec(target) {
-  if (target == "react-tests-android") {
-    return "FastLinux"
-  } else if (target == "node-linux") {
-    return 'docker'
-  }
-  return 'osx_vegas'
-}
-
 def doDockerBuild(target, postStep = null) {
   return {
     timeout(25) { // 25 minutes
@@ -124,20 +97,6 @@ def doBuild(nodeSpec, target, postStep = null) {
   }
 }
 
-/*def doBuild(target, configuration) {
-  node(getNodeSpec(target)) {
-    getSourceArchive()
-    timeout(25) { // 25 minutes
-      if(target == 'node-linux') {
-        sh "bash scripts/docker-test.sh node ${configuration}"
-      } else {
-        sh "bash scripts/test.sh ${target} ${configuration}"
-      }
-    }
-    //step([$class: 'GitHubCommitStatusSetter', contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: "${target}_${configuration}"]])
-  }
-}
-*/
 stage('build') {
   parallel(
     eslint: doDockerBuild('eslint-ci', {
@@ -149,7 +108,13 @@ stage('build') {
     macos_node_debug: doBuild('osx_vegas', 'node Debug'),
     macos_node_release: doBuild('osx_vegas', 'node Release'),
     macos_realmjs_debug: doBuild('osx_vegas', 'realmjs Debug'),
+    macos_realmjs_release: doBuild('osx_vegas', 'realmjs Release'),
     macos_react_tests_debug: doBuild('osx_vegas', 'react-tests Debug'),
+    macos_react_tests_release: doBuild('osx_vegas', 'react-tests Release'),
+    macos_react_example_debug: doBuild('osx_vegas', 'react-example Debug'),
+    macos_react_example_release: doBuild('osx_vegas', 'react-example Release'),
+    macos_object_store_debug: doBuild('osx_vegas', 'object-store Debug'),
+    macos_object_store_release: doBuild('osx_vegas', 'object-store Release'),
     android_react_tests: doBuild('FastLinux', 'react-tests-android', {
       sh "cat tests/react-test-app/tests.xml"
       junit 'tests/react-test-app/tests.xml'
@@ -158,29 +123,7 @@ stage('build') {
 
 /*  def configurations = ['Debug', 'Release']
   def targets = [
-    'node',
-    'node-linux',
-    'realmjs',
-    'react-tests',
-    'react-example',
-    'object-store',
     'test-runners'
   ]
-
-  def jobs = [:]
-  jobs['eslint'] = doBuild('eslint', 'Release')
-  jobs['jsdoc'] = doBuild('jsdoc', 'Release')
-  jobs['react-tests-android'] = doBuild('react-tests-android', 'Release')
-
-  for (int i = 0; i < targets.size(); i++) {
-    def targetName = targets[i];
-    for (int j = 0; j < configurations.size(); j++) {
-      def configurationName = configurations[j];
-
-      jobs["${targetName}_${configurationName}"] = {
-        doBuild(targetName, configurationName)
-      }
-    }
-  }
 */
 }
