@@ -138,6 +138,7 @@ def doBuild(nodeSpec, target) {
 stage('build') {
   parallel(
     eslint: doDockerBuild('eslint-ci', {
+      sh "cat eslint.xml"
       step([$class: 'CheckStylePublisher', canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: 'eslint.xml', unHealthy: ''])
     }),
     jsdoc: doDockerBuild('jsdoc'),
